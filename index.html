@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1769aa">
+<title>鄰停｜社區共享車位</title>
+<style>
+:root{--blue:#1769aa;--blue2:#eaf4ff;--ink:#1f2937;--muted:#667085;--line:#e5eaf0;--bg:#f5f7fb;--green:#16845b;--orange:#b66b00;--red:#c83c3c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Microsoft JhengHei",sans-serif;color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:11px 14px;font-weight:700}
+.app{max-width:480px;min-height:100vh;margin:auto;background:#fff;box-shadow:0 0 28px #172b4d12;position:relative;padding-bottom:84px}
+header{background:linear-gradient(135deg,#145da0,#278bd0);color:#fff;padding:22px 20px 18px;border-radius:0 0 22px 22px}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:13px;background:#fff;color:var(--blue);display:grid;place-items:center;font-size:24px;font-weight:900}
+.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;font-size:12px;opacity:.88}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:20px}.welcome{font-size:13px;opacity:.9}.header-row h2{margin:4px 0 0;font-size:22px}
+.role-select{background:#ffffff20;color:white;border:1px solid #ffffff55;padding:9px;border-radius:10px;max-width:135px}
+main{padding:18px 16px}.page{display:none}.page.active{display:block}.section-head{display:flex;align-items:center;justify-content:space-between;margin:5px 0 13px}.section-head h3{margin:0;font-size:17px}.sub{color:var(--muted);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:22px}.stat{background:#f2f7fd;border:1px solid #e4eef9;border-radius:14px;padding:12px 10px}.stat strong{display:block;font-size:23px;color:var(--blue)}.stat span{font-size:11px;color:var(--muted)}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}.quick button{text-align:left;background:#fff;border:1px solid var(--line);padding:15px;box-shadow:0 3px 10px #172b4d08}.quick .emoji{font-size:22px;display:block;margin-bottom:8px}.quick small{display:block;font-weight:400;color:var(--muted);margin-top:4px;font-size:11px}
+.card{border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:11px;background:white}.parking-top{display:flex;gap:12px}.parking-pic{width:86px;min-width:86px;height:82px;border-radius:12px;background:linear-gradient(145deg,#dfe9ef,#b7c9d4);display:grid;place-items:center;font-size:32px}.parking-info{flex:1;min-width:0}.parking-info h4{margin:2px 0 5px;font-size:15px}.parking-info p{margin:3px 0;color:var(--muted);font-size:12px}.price{font-weight:800;color:var(--green);font-size:15px}.tag{display:inline-block;padding:4px 8px;border-radius:99px;font-size:11px;font-weight:700;background:#e7f7ef;color:var(--green)}.tag.orange{background:#fff1d9;color:var(--orange)}.tag.red{background:#ffebeb;color:var(--red)}.card-actions{display:flex;gap:8px;margin-top:12px}.card-actions button{flex:1}.primary{background:var(--blue);color:#fff}.secondary{background:var(--blue2);color:var(--blue)}.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}.danger{background:#fff0f0;color:var(--red)}
+input,select,textarea{width:100%;border:1px solid #d8e0e9;border-radius:11px;padding:12px;background:white;color:var(--ink);outline-color:var(--blue)}label{display:block;font-size:12px;font-weight:700;margin:12px 0 6px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form-grid label{margin-top:0}.full{grid-column:1/-1}.empty{padding:28px 12px;text-align:center;color:var(--muted);font-size:13px}.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 5px calc(8px + env(safe-area-inset-bottom));z-index:10}.bottom-nav button{background:transparent;color:#778293;padding:7px 2px;font-size:10px;border-radius:9px}.bottom-nav button span{display:block;font-size:20px;margin-bottom:3px}.bottom-nav button.active{color:var(--blue);background:#edf6ff}
+.notice{background:#fff8e8;border:1px solid #f7e4b6;color:#77551a;border-radius:12px;padding:12px;font-size:12px;line-height:1.6;margin-bottom:14px}.modal-backdrop{position:fixed;inset:0;background:#15233870;display:none;align-items:flex-end;justify-content:center;z-index:30}.modal-backdrop.show{display:flex}.modal{width:min(480px,100%);background:white;border-radius:22px 22px 0 0;padding:20px 18px 28px;max-height:88vh;overflow:auto}.modal h3{margin:0 0 6px}.modal p{font-size:12px;color:var(--muted);margin:0 0 10px}.modal-actions{display:flex;gap:8px;margin-top:18px}.modal-actions button{flex:1}.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#182536;color:white;padding:12px 16px;border-radius:12px;font-size:13px;z-index:50;display:none;max-width:90%;box-shadow:0 8px 25px #0002}.toast.show{display:block}.admin-menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}.admin-menu button{background:#f4f0ff;border:1px solid #e5dcff;color:#5c43a5;text-align:left;padding:16px}.small-btn{padding:8px 10px;font-size:12px}.divider{height:1px;background:var(--line);margin:14px 0}.status-line{display:flex;justify-content:space-between;gap:8px;align-items:center}.muted{color:var(--muted)}footer{text-align:center;color:#9aa3af;font-size:10px;padding:8px 20px 18px}
+@media(min-width:700px){body{padding:22px 0}.app{border-radius:24px;overflow:hidden;min-height:850px}.bottom-nav{bottom:22px;border-radius:0 0 24px 24px}.modal-backdrop{align-items:center}.modal{border-radius:20px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand"><div class="logo">P</div><div><h1>鄰停・社區共享車位</h1><p>好鄰居共享空間，停車更方便</p></div></div>
+ <div class="header-row"><div><div class="welcome">早安，王小明</div><h2 id="headerTitle">社區首頁</h2></div>
+ <select class="role-select" id="roleSelect" aria-label="切換展示角色"><option value="resident">一般住戶</option><option value="provider">車位提供者</option><option value="admin">管理員</option></select></div>
+</header>
+<main>
+<section class="page active" id="homePage">
+ <div class="stats"><div class="stat"><strong id="availableCount">12</strong><span>可借車位</span></div><div class="stat"><strong id="pendingCount">2</strong><span>待審申請</span></div><div class="stat"><strong id="myCount">1</strong><span>我的借用</span></div></div>
+ <div class="section-head"><h3>快速操作</h3><span class="sub">常用功能</span></div>
+ <div class="quick"><button onclick="go('searchPage')"><span class="emoji">🔎</span>找車位<small>依日期與時段搜尋</small></button><button onclick="go('mySpacesPage')"><span class="emoji">🅿️</span>提供車位<small>管理我的共享車位</small></button><button onclick="go('requestsPage')"><span class="emoji">📋</span>借用申請<small>查看申請進度</small></button><button onclick="go('noticesPage')"><span class="emoji">🔔</span>通知中心<small>掌握最新狀態</small></button></div>
+ <div class="section-head"><h3>推薦可借車位</h3><button class="secondary small-btn" onclick="go('searchPage')">查看全部</button></div><div id="homeSpaces"></div>
+ <div class="notice">🔐 示範網站：目前使用測試資料，尚未連接真實住戶帳號、雲端資料庫或簡訊通知。</div>
+</section>
+<section class="page" id="searchPage">
+ <div class="section-head"><h3>搜尋可借車位</h3><span class="sub">即時篩選示範</span></div>
+ <div class="card"><div class="form-grid"><div><label>借用日期</label><input id="searchDate" type="date" value="2026-11-01"></div><div><label>車位類型</label><select id="searchType"><option value="all">全部類型</option><option>平面車位</option><option>機械車位</option></select></div><div><label>開始時間</label><input id="searchStart" type="time" value="08:00"></div><div><label>結束時間</label><input id="searchEnd" type="time" value="18:00"></div></div><button class="primary" style="width:100%;margin-top:14px" onclick="renderSpaces()">搜尋車位</button></div>
+ <div id="searchResults"></div>
+</section>
+<section class="page" id="requestsPage">
+ <div class="section-head"><h3>我的借用申請</h3><span class="sub">申請進度一覽</span></div><div id="requestList"></div>
+</section>
+<section class="page" id="mySpacesPage">
+ <div class="section-head"><h3>我的共享車位</h3><button class="primary small-btn" onclick="openSpaceForm()">＋ 新增車位</button></div>
+ <div class="notice">提供車位前，請確認您有權分享該車位，並設定清楚的可借時段及使用規則。</div><div id="providerSpaces"></div>
+</section>
+<section class="page" id="reviewPage">
+ <div class="section-head"><h3>待審核申請</h3><span class="sub">僅處理自己的車位</span></div><div id="reviewList"></div>
+</section>
+<section class="page" id="adminPage">
+ <div class="section-head"><h3>管理員專區</h3><span class="sub">社區管理總覽</span></div>
+ <div class="stats"><div class="stat"><strong>128</strong><span>住戶帳號</span></div><div class="stat"><strong>36</strong><span>登錄車位</span></div><div class="stat"><strong id="adminPending">2</strong><span>待審申請</span></div></div>
+ <div class="admin-menu"><button onclick="showToast('住戶管理示範：正式版可搜尋、驗證、停用住戶。')">👥 住戶管理<br><small>驗證與帳號狀態</small></button><button onclick="showToast('車位管理示範：正式版可停用違規或已失效車位。')">🅿️ 全部車位<br><small>刊登與停用管理</small></button><button onclick="go('requestsPage')">📋 申請管理<br><small>查看借用申請</small></button><button onclick="showToast('操作紀錄示範：正式版記錄操作者、時間、異動內容與原因。')">🧾 操作紀錄<br><small>稽核與追蹤</small></button></div>
+ <div class="divider"></div><h3 style="font-size:15px">近期申請概況</h3><div id="adminRequests"></div>
+</section>
+<section class="page" id="noticesPage"><div class="section-head"><h3>通知中心</h3><button class="ghost small-btn" onclick="showToast('已將示範通知標記為已讀')">全部已讀</button></div><div class="card">🔔 <b>借用申請已送出</b><p class="sub">A-123 車位・等待提供者審核</p></div><div class="card">🟢 <b>共享車位刊登提醒</b><p class="sub">請確認您設定的可借時段正確。</p></div></section>
+<section class="page" id="profilePage"><div class="section-head"><h3>我的帳號</h3></div><div class="card"><div class="parking-top"><div class="logo" style="border-radius:50%;background:#eaf4ff">王</div><div><b>王小明</b><p class="sub">A棟 12樓・1205室</p><span class="tag">住戶驗證示範</span></div></div><div class="divider"></div><label>聯絡電話</label><input value="09xx-xxx-123"><label>車牌號碼（預設）</label><input value="ABC-1234"><button class="primary" style="width:100%;margin-top:14px" onclick="showToast('示範資料已更新（尚未寫入雲端）')">儲存資料</button></div><div class="notice">正式上線前應加入登入驗證、密碼重設、個資告知與管理員權限控管。</div></section>
+</main>
+<nav class="bottom-nav" id="bottomNav">
+ <button class="active" data-page="homePage" onclick="go('homePage')"><span>⌂</span>首頁</button>
+ <button data-page="searchPage" onclick="go('searchPage')"><span>⌕</span>找車位</button>
+ <button data-page="mySpacesPage" onclick="go('mySpacesPage')"><span>＋</span>提供車位</button>
+ <button data-page="requestsPage" onclick="go('requestsPage')"><span>▤</span>申請紀錄</button>
+ <button data-page="profilePage" onclick="go('profilePage')"><span>♙</span>我的</button>
+</nav>
+<footer>鄰停 Neighbor Parking · 手機版互動原型</footer>
+</div>
+<div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const spaces=[
+ {id:'A-123',location:'B1・A棟近電梯',type:'平面車位',price:100,owner:'陳先生',size:'一般轎車適用',available:true},
+ {id:'B-202',location:'B1・B棟入口旁',type:'平面車位',price:50,owner:'林小姐',size:'車位寬度請先確認',available:true},
+ {id:'C-305',location:'B2・C棟',type:'機械車位',price:120,owner:'張先生',size:'限車高 155 cm 以下',available:true},
+ {id:'D-401',location:'B2・D棟轉角',type:'平面車位',price:80,owner:'王小明',size:'一般轎車適用',available:false}
+];
+let requests=[
+ {id:'BK-20261029-001',space:'A-123',date:'2026-11-01',start:'08:00',end:'12:00',plate:'ABC-1234',applicant:'李小華',status:'待審核'},
+ {id:'BK-20261029-002',space:'B-202',date:'2026-11-02',start:'09:00',end:'17:00',plate:'DEF-5678',applicant:'周先生',status:'待審核'},
+ {id:'BK-20261028-003',space:'C-305',date:'2026-10-30',start:'10:00',end:'12:00',plate:'GHI-9999',applicant:'王小明',status:'已核准'}
+];
+let role='resident';
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
+function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));const titles={homePage:'社區首頁',searchPage:'找車位',requestsPage:'我的申請',mySpacesPage:'我的車位',reviewPage:'申請審核',adminPage:'管理員專區',noticesPage:'通知中心',profilePage:'我的帳號'};document.getElementById('headerTitle').textContent=titles[id]||'社區共享車位';renderAll();window.scrollTo({top:0,behavior:'smooth'})}
+function badge(s){return s==='已核准'?'<span class="tag">已核准</span>':s==='已拒絕'?'<span class="tag red">已拒絕</span>':s==='已取消'?'<span class="tag red">已取消</span>':'<span class="tag orange">待審核</span>'}
+function spaceCard(s,buttonLabel='查看詳情'){return `<div class="card"><div class="parking-top"><div class="parking-pic">🅿️</div><div class="parking-info"><div class="status-line"><h4>${s.id}</h4><span class="price">$${s.price}<small class="muted">/時</small></span></div><p>📍 ${s.location}</p><p>${s.type} · ${s.size}</p><p class="sub">提供者：${s.owner}</p></div></div><div class="card-actions"><button class="secondary" onclick="spaceDetails('${s.id}')">${buttonLabel}</button><button class="primary" onclick="openApply('${s.id}')">申請借用</button></div></div>`}
+function renderSpaces(){const type=document.getElementById('searchType')?.value||'all';const results=spaces.filter(s=>s.available&&(type==='all'||s.type===type));document.getElementById('searchResults').innerHTML=results.length?results.map(s=>spaceCard(s)).join(''):'<div class="empty">這個條件目前沒有可借車位，請調整日期或篩選條件。</div>'}
+function spaceDetails(id){const s=spaces.find(x=>x.id===id);openModal(`<h3>車位 ${s.id}</h3><p>請在申請前確認車位規格與使用規則。</p><div class="parking-pic" style="width:100%;height:120px;margin:12px 0">🅿️</div><p>📍 ${s.location}</p><p>類型：${s.type}</p><p>限制：${s.size}</p><p>費用：$${s.price}/小時（示範價格）</p><p>提供者：${s.owner}</p><div class="modal-actions"><button class="ghost" onclick="closeModal()">返回</button><button class="primary" onclick="closeModal();openApply('${s.id}')">申請借用</button></div>`)}
+function openApply(id){const s=spaces.find(x=>x.id===id);openModal(`<h3>申請借用・${id}</h3><p>送出後會交由車位提供者審核。</p><form id="applyForm"><label>借用日期</label><input required name="date" type="date" value="2026-11-01" min="2026-10-29"><div class="form-grid"><div><label>開始時間</label><input required name="start" type="time" value="08:00"></div><div><label>結束時間</label><input required name="end" type="time" value="12:00"></div></div><label>車牌號碼</label><input required name="plate" maxlength="10" placeholder="例如 ABC-1234"><label>備註（選填）</label><textarea name="note" rows="2" placeholder="可填寫其他需求"></textarea><div class="notice" style="margin-top:12px">車位：${id}　｜　示範費用 $${s.price}/小時</div><div class="modal-actions"><button type="button" class="ghost" onclick="closeModal()">取消</button><button class="primary" type="submit">確認送出</button></div></form>`);document.getElementById('applyForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);if(f.get('start')>=f.get('end')){showToast('結束時間必須晚於開始時間');return}const conflict=requests.some(r=>r.space===id&&r.date===f.get('date')&&['待審核','已核准'].includes(r.status)&&f.get('start')<r.end&&f.get('end')>r.start);if(conflict){showToast('此時段已有待審或核准申請，請選擇其他時段');return}requests.unshift({id:'BK-'+Date.now(),space:id,date:f.get('date'),start:f.get('start'),end:f.get('end'),plate:f.get('plate'),applicant:'王小明',status:'待審核'});closeModal();renderAll();go('requestsPage');showToast('申請已送出，請等待提供者審核（示範資料）')}}
+function renderRequests(){document.getElementById('requestList').innerHTML=requests.filter(r=>r.applicant==='王小明').map(r=>`<div class="card"><div class="status-line"><b>${r.space}</b>${badge(r.status)}</div><p class="sub">${r.date}・${r.start}–${r.end}</p><p class="sub">車牌：${r.plate}　申請編號：${r.id}</p>${r.status==='待審核'?`<button class="ghost small-btn" onclick="cancelRequest('${r.id}')">取消申請</button>`:''}</div>`).join('')||'<div class="empty">目前沒有借用申請。</div>'}
+function cancelRequest(id){const r=requests.find(x=>x.id===id);if(r.status!=='待審核'){showToast('此申請目前不能取消');return}r.status='已取消';renderAll();showToast('申請已取消（示範資料）')}
+function openSpaceForm(){openModal(`<h3>新增共享車位</h3><p>填寫基本資料後，可在正式版發布供住戶搜尋。</p><form id="spaceForm"><label>車位編號</label><input name="id" required placeholder="例如 A-508"><label>位置描述</label><input name="location" required placeholder="例如 B1・A棟附近"><label>車位類型</label><select name="type"><option>平面車位</option><option>機械車位</option></select><div class="form-grid"><div><label>費用（每小時）</label><input name="price" type="number" min="0" value="0" required></div><div><label>車位限制</label><input name="size" value="一般轎車適用" required></div></div><label>使用規則（選填）</label><textarea name="rule" rows="2" placeholder="例如：離場前請確認柵欄關閉"></textarea><div class="modal-actions"><button type="button" class="ghost" onclick="closeModal()">取消</button><button class="primary" type="submit">儲存車位</button></div></form>`);document.getElementById('spaceForm').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);if(spaces.some(s=>s.id===f.get('id').trim())){showToast('車位編號已存在，請重新確認');return}spaces.push({id:f.get('id').trim(),location:f.get('location'),type:f.get('type'),price:Number(f.get('price')),owner:'王小明',size:f.get('size'),available:true});closeModal();renderAll();showToast('車位已新增至示範清單')}}
+function renderProvider(){const mine=spaces.filter(s=>s.owner==='王小明');document.getElementById('providerSpaces').innerHTML=mine.map(s=>`<div class="card"><div class="status-line"><b>${s.id}</b><span class="tag">${s.available?'刊登中':'已暫停'}</span></div><p class="sub">${s.location}・${s.type}・$${s.price}/時</p><div class="card-actions"><button class="secondary" onclick="toggleSpace('${s.id}')">${s.available?'暫停刊登':'恢復刊登'}</button><button class="ghost" onclick="go('reviewPage')">查看申請</button></div></div>`).join('')||'<div class="empty">尚未新增車位，點選右上方「新增車位」開始。</div>'}
+function toggleSpace(id){const s=spaces.find(x=>x.id===id);s.available=!s.available;renderAll();showToast(s.available?'車位已恢復刊登':'車位已暫停刊登')}
+function renderReview(){const mine=spaces.filter(s=>s.owner==='王小明').map(s=>s.id);const list=requests.filter(r=>mine.includes(r.space)&&r.status==='待審核');document.getElementById('reviewList').innerHTML=list.map(r=>`<div class="card"><div class="status-line"><b>${r.space}・${r.applicant}</b>${badge(r.status)}</div><p class="sub">${r.date}・${r.start}–${r.end}</p><p class="sub">車牌：${r.plate}</p><div class="card-actions"><button class="primary" onclick="decide('${r.id}','已核准')">核准</button><button class="danger" onclick="rejectRequest('${r.id}')">拒絕</button></div></div>`).join('')||'<div class="empty">目前沒有待審申請。新增自己的示範車位後，即可測試審核流程。</div>'}
+function decide(id,status){const r=requests.find(x=>x.id===id);const conflict=requests.some(x=>x.id!==id&&x.space===r.space&&x.date===r.date&&x.status==='已核准'&&r.start<x.end&&r.end>x.start);if(conflict){showToast('核准失敗：該時段已被其他申請核准');return}r.status=status;renderAll();showToast('已核准申請（示範資料）')}
+function rejectRequest(id){openModal(`<h3>拒絕這筆申請？</h3><p>請填寫原因，讓申請人了解處理結果。</p><label>拒絕原因</label><textarea id="rejectReason" rows="3" placeholder="例如：該時段車位無法提供"></textarea><div class="modal-actions"><button class="ghost" onclick="closeModal()">返回</button><button class="danger" onclick="confirmReject('${id}')">確認拒絕</button></div>`)}
+function confirmReject(id){const reason=document.getElementById('rejectReason').value.trim();if(!reason){showToast('請填寫拒絕原因');return}const r=requests.find(x=>x.id===id);r.status='已拒絕';r.reason=reason;closeModal();renderAll();showToast('已拒絕申請並記錄原因')}
+function renderAdmin(){document.getElementById('adminRequests').innerHTML=requests.slice(0,4).map(r=>`<div class="card"><div class="status-line"><b>${r.space}・${r.applicant}</b>${badge(r.status)}</div><p class="sub">${r.date}・${r.start}–${r.end}</p></div>`).join('')}
+function renderAll(){document.getElementById('homeSpaces').innerHTML=spaces.filter(s=>s.available).slice(0,2).map(s=>spaceCard(s,'查看詳情')).join('');renderSpaces();renderRequests();renderProvider();renderReview();renderAdmin();document.getElementById('pendingCount').textContent=requests.filter(r=>r.status==='待審核').length;document.getElementById('adminPending').textContent=requests.filter(r=>r.status==='待審核').length;document.getElementById('myCount').textContent=requests.filter(r=>r.applicant==='王小明'&&r.status==='已核准').length}
+function openModal(content){document.getElementById('modal').innerHTML=content;document.getElementById('modalBackdrop').classList.add('show')}
+function closeModal(){document.getElementById('modalBackdrop').classList.remove('show')}
+document.getElementById('roleSelect').addEventListener('change',e=>{role=e.target.value;const nav=document.getElementById('bottomNav');if(role==='provider'){nav.innerHTML=`<button onclick="go('homePage')"><span>⌂</span>首頁</button><button onclick="go('mySpacesPage')"><span>🅿</span>我的車位</button><button onclick="go('reviewPage')"><span>✓</span>審核申請</button><button onclick="go('noticesPage')"><span>♧</span>通知</button><button onclick="go('profilePage')"><span>♙</span>我的</button>`}else if(role==='admin'){nav.innerHTML=`<button onclick="go('adminPage')"><span>▦</span>管理首頁</button><button onclick="go('adminPage')"><span>♙</span>住戶管理</button><button onclick="go('adminPage')"><span>🅿</span>車位管理</button><button onclick="go('requestsPage')"><span>▤</span>申請管理</button><button onclick="go('profilePage')"><span>♙</span>我的</button>`;go('adminPage')}else{nav.innerHTML=`<button class="active" data-page="homePage" onclick="go('homePage')"><span>⌂</span>首頁</button><button data-page="searchPage" onclick="go('searchPage')"><span>⌕</span>找車位</button><button data-page="mySpacesPage" onclick="go('mySpacesPage')"><span>＋</span>提供車位</button><button data-page="requestsPage" onclick="go('requestsPage')"><span>▤</span>申請紀錄</button><button data-page="profilePage" onclick="go('profilePage')"><span>♙</span>我的</button>`;go('homePage')}showToast('已切換為'+({resident:'一般住戶',provider:'車位提供者',admin:'管理員'}[role])+'展示模式')});
+renderAll();
+</script>
+</body></html>
