@@ -61,7 +61,48 @@ input,select,textarea{width:100%;border:1px solid #d8e0e9;border-radius:11px;pad
  <div class="divider"></div><h3 style="font-size:15px">近期申請概況</h3><div id="adminRequests"></div>
 </section>
 <section class="page" id="noticesPage"><div class="section-head"><h3>通知中心</h3><button class="ghost small-btn" onclick="showToast('已將示範通知標記為已讀')">全部已讀</button></div><div class="card">🔔 <b>借用申請已送出</b><p class="sub">A-123 車位・等待提供者審核</p></div><div class="card">🟢 <b>共享車位刊登提醒</b><p class="sub">請確認您設定的可借時段正確。</p></div></section>
-<section class="page" id="profilePage"><div class="section-head"><h3>我的帳號</h3></div><div class="card"><div class="parking-top"><div class="logo" style="border-radius:50%;background:#eaf4ff">王</div><div><b>王小明</b><p class="sub">A棟 12樓・1205室</p><span class="tag">住戶驗證示範</span></div></div><div class="divider"></div><label>聯絡電話</label><input value="09xx-xxx-123"><label>車牌號碼（預設）</label><input value="ABC-1234"><button class="primary" style="width:100%;margin-top:14px" onclick="showToast('示範資料已更新（尚未寫入雲端）')">儲存資料</button></div><div class="notice">正式上線前應加入登入驗證、密碼重設、個資告知與管理員權限控管。</div></section>
+<section class="page" id="profilePage">
+  <div class="section-head">
+    <h3>我的帳號</h3>
+  </div>
+
+  <div class="card">
+    <h3>鄰停住戶登入</h3>
+    <p class="sub">請使用您的電子郵件與密碼登入</p>
+
+    <label>電子郵件</label>
+    <input id="authEmail" type="email"
+      placeholder="請輸入電子郵件"
+      autocomplete="email">
+
+    <label>密碼</label>
+    <input id="authPassword" type="password"
+      placeholder="請輸入密碼"
+      autocomplete="current-password">
+
+    <label>姓名（註冊時填寫）</label>
+    <input id="authName" type="text"
+      placeholder="請輸入住戶姓名">
+
+    <label>社區戶別（註冊時填寫）</label>
+    <input id="authUnit" type="text"
+      placeholder="例如 A棟1205室">
+
+    <div class="card-actions">
+      <button class="primary" type="button">登入</button>
+      <button class="secondary" type="button">註冊</button>
+    </div>
+
+    <button class="ghost" type="button"
+      style="width:100%;margin-top:10px">
+      登出
+    </button>
+
+    <div class="notice" id="authStatus" style="margin-top:14px">
+      尚未登入
+    </div>
+  </div>
+</section>
 </main>
 <nav class="bottom-nav" id="bottomNav">
  <button class="active" data-page="homePage" onclick="go('homePage')"><span>⌂</span>首頁</button>
