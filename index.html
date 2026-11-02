@@ -63,6 +63,18 @@ input,select,textarea{width:100%;border:1px solid #d8e0e9;border-radius:11px;pad
   <button class="primary" onclick="adminLoadResidents()">
     載入住戶名單
   </button>
+  <div class="card">
+  <h3>全社區車位管理</h3>
+  <p id="adminSpaceStatus">尚未載入車位資料</p>
+
+  <button class="primary"
+    type="button"
+    onclick="adminLoadParkingSpaces()">
+    載入全社區車位
+  </button>
+
+  <div id="adminSpaceList"></div>
+</div>
   <div id="adminResidentList"></div>
  </div><div class="admin-menu"><button onclick="showToast('住戶管理示範：正式版可搜尋、驗證、停用住戶。')">👥 住戶管理<br><small>驗證與帳號狀態</small></button><button onclick="showToast('車位管理示範：正式版可停用違規或已失效車位。')">🅿️ 全部車位<br><small>刊登與停用管理</small></button><button onclick="go('requestsPage')">📋 申請管理<br><small>查看借用申請</small></button><button onclick="showToast('操作紀錄示範：正式版記錄操作者、時間、異動內容與原因。')">🧾 操作紀錄<br><small>稽核與追蹤</small></button></div>
  <div class="divider"></div><h3 style="font-size:15px">近期申請概況</h3><div id="adminRequests"></div>
@@ -307,7 +319,55 @@ async function adminLoadResidents() {
     btn.textContent = user.is_approved ? '取消核准' : '核准住戶';
 
     btn.onclick = () =>
-      adminSetResidentApproval(user.user_id, !user.is_approved);
+      adminSetResidentApproval(user.user_id, !user.is_approved)
+async function adminLoadParkingSpaces() {
+  const status = document.getElementById('adminSpaceStatus');
+  const list = document.getElementById('adminSpaceList');
+
+  if (!currentProfile ||
+      currentProfile.role !== 'admin' ||
+      !currentProfile.is_approved) {
+    status.textContent = '僅限已核准管理員使用';
+    return;
+  }
+
+  status.textContent = '正在讀取全社區車位...';
+
+  const { data, error } =
+    await supabaseClient.rpc('admin_get_all_parking_spaces');
+
+  if (error) {
+    status.textContent = '讀取失敗：' + error.message;
+    return;
+  }
+
+  list.replaceChildren();
+
+  data.forEach(space => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const title = document.createElement('h3');
+    title.textContent = '車位：' + space.spot_code;
+
+    const location = document.createElement('p');
+    location.textContent = '位置：' + space.location_description;
+
+    const owner = document.createElement('p');
+    owner.textContent =
+      '提供者：' + (space.owner_name || '未提供') +
+      '／' + (space.owner_unit || '未提供');
+
+    const state = document.createElement('p');
+    state.textContent = space.is_active ? '開放中' : '已暫停';
+
+    card.append(title, location, owner, state);
+    list.appendChild(card);
+  });
+
+  status.textContent = '全社區車位共 ' + data.length + ' 個';
+}
+;
 
     item.append(name, unit, state, btn);
     list.appendChild(item);
