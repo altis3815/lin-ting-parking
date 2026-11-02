@@ -342,7 +342,7 @@ async function adminLoadParkingSpaces() {
   status.textContent = '正在讀取全社區車位...';
 
   try {
- // 取得目前網站登入 Session
+// 取得目前網站登入 Session
 const { data: sessionData, error: sessionError } =
   await supabaseClient.auth.getSession();
 
