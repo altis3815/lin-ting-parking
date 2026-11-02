@@ -82,6 +82,52 @@ const supabaseClient = createClient(
   'https://ylgfwnehissxowubpwqm.supabase.co',
   'sb_publishable_qz9mLwPnkyDFUUthHnfILA_ulaluhDH'
 );
+ 
+// 鄰停登入狀態管理
+let currentUser = null;
+let currentProfile = null;
+
+// 取得登入者資料
+async function loadCurrentUser() {
+  const { data: sessionData, error: sessionError } =
+    await supabaseClient.auth.getSession();
+
+  if (sessionError) {
+    console.error('登入狀態讀取失敗', sessionError);
+    return null;
+  }
+
+  const user = sessionData.session?.user;
+
+  if (!user) {
+    currentUser = null;
+    currentProfile = null;
+    return null;
+  }
+
+  const { data: profile, error } = await supabaseClient
+    .from('profiles')
+    .select('id, display_name, unit_no, role, is_approved')
+    .eq('id', user.id)
+    .single();
+
+  if (error) {
+    console.error('住戶資料讀取失敗', error);
+    return null;
+  }
+
+  currentUser = user;
+  currentProfile = profile;
+
+  return profile;
+}
+
+// 監聽登入狀態變化
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  console.log('鄰停登入狀態：', event);
+  currentUser = session?.user ?? null;
+});
+
 const spaces=[
  {id:'A-123',location:'B1・A棟近電梯',type:'平面車位',price:100,owner:'陳先生',size:'一般轎車適用',available:true},
  {id:'B-202',location:'B1・B棟入口旁',type:'平面車位',price:50,owner:'林小姐',size:'車位寬度請先確認',available:true},
