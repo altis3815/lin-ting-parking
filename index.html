@@ -342,8 +342,43 @@ async function adminLoadParkingSpaces() {
   status.textContent = '正在讀取全社區車位...';
 
   try {
-    const { data, error } =
-      await supabaseClient.rpc('admin_get_all_parking_spaces');
+ // 取得目前網站登入 Session
+const { data: sessionData, error: sessionError } =
+  await supabaseClient.auth.getSession();
+
+const sessionUser = sessionData?.session?.user;
+
+const profileUid =
+  currentProfile.id || currentProfile.user_id;
+
+const sessionUid = sessionUser?.id || '';
+
+console.log('鄰停登入診斷', {
+  sessionError: sessionError?.message || null,
+  sessionUid: sessionUid || 'NULL',
+  profileUid: profileUid || 'NULL',
+  uidMatch: sessionUid === profileUid
+});
+
+status.textContent =
+  '登入診斷：Session ' +
+  (sessionUid ? '存在' : '不存在') +
+  '；UID ' +
+  (sessionUid === profileUid ? '一致' : '不一致');
+
+if (sessionError || !sessionUid) {
+  status.textContent += '；請重新登入';
+  return;
+}
+
+const { data, error } =
+  await supabaseClient.rpc('admin_get_all_parking_spaces');
+
+if (error) {
+  console.error('RPC錯誤：', error);
+  status.textContent = 'RPC讀取失敗：' + error.message;
+  return;
+}  
 
     if (error) {
       console.error('管理員車位讀取失敗：', error);
