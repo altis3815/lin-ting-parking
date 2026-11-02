@@ -89,14 +89,15 @@ input,select,textarea{width:100%;border:1px solid #d8e0e9;border-radius:11px;pad
       placeholder="例如 A棟1205室">
 
     <div class="card-actions">
-      <button class="primary" type="button">登入</button>
-      <button class="secondary" type="button">註冊</button>
+      <button class="primary" type="button"
+onclick="residentLogin()">登入</button>
+      <button class="secondary" type="button"
+onclick="residentRegister()">註冊</button>
     </div>
 
     <button class="ghost" type="button"
-      style="width:100%;margin-top:10px">
-      登出
-    </button>
+onclick="residentLogout()"
+style="width:100%;margin-top:10px">登出</button>
 
     <div class="notice" id="authStatus" style="margin-top:14px">
       尚未登入
@@ -168,6 +169,97 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
   console.log('鄰停登入狀態：', event);
   currentUser = session?.user ?? null;
 });
+
+// 鄰停住戶登入
+async function residentLogin() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+
+  const status = document.getElementById('authStatus');
+  status.textContent = '登入中...';
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    status.textContent = '登入失敗：' + error.message;
+    return;
+  }
+
+  const profile = await loadCurrentUser();
+
+  if (!profile) {
+    status.textContent = '無法讀取住戶資料，請聯絡管理員。';
+    return;
+  }
+
+  if (profile.role === 'resident' && !profile.is_approved) {
+    status.textContent = '帳號尚待管理員核准。';
+    return;
+  }
+
+  status.textContent =
+    '登入成功：' + profile.display_name +
+    '（' + profile.role + '）';
+}
+
+// 鄰停住戶註冊
+async function residentRegister() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const name = document.getElementById('authName').value.trim();
+  const unit = document.getElementById('authUnit').value.trim();
+
+  const status = document.getElementById('authStatus');
+
+  if (!email || !password || !name || !unit) {
+    status.textContent = '請完整填寫電子郵件、密碼、姓名及戶別。';
+    return;
+  }
+
+  if (password.length < 8) {
+    status.textContent = '密碼至少需要 8 個字元。';
+    return;
+  }
+
+  status.textContent = '註冊中...';
+
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        display_name: name,
+        unit_no: unit
+      }
+    }
+  });
+
+  if (error) {
+    status.textContent = '註冊失敗：' + error.message;
+    return;
+  }
+
+  status.textContent = data.session
+    ? '註冊成功，帳號等待管理員核准。'
+    : '註冊成功，請先完成電子郵件驗證。';
+}
+
+// 鄰停住戶登出
+async function residentLogout() {
+  const { error } = await supabaseClient.auth.signOut();
+
+  document.getElementById('authStatus').textContent =
+    error ? '登出失敗：' + error.message : '已登出';
+
+  if (!error) {
+    currentUser = null;
+    currentProfile = null;
+  }
+}
+
 
 const spaces=[
  {id:'A-123',location:'B1・A棟近電梯',type:'平面車位',price:100,owner:'陳先生',size:'一般轎車適用',available:true},
