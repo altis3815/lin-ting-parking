@@ -74,7 +74,14 @@ input,select,textarea{width:100%;border:1px solid #d8e0e9;border-radius:11px;pad
 </div>
 <div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const { createClient } = window.supabase;
+
+const supabaseClient = createClient(
+  'https://ylgfwnehissxowubpwqm.supabase.co',
+  'sb_publishable_qz9mLwPnkyDFUUthHnfILA_ulaluhDH'
+);
 const spaces=[
  {id:'A-123',location:'B1・A棟近電梯',type:'平面車位',price:100,owner:'陳先生',size:'一般轎車適用',available:true},
  {id:'B-202',location:'B1・B棟入口旁',type:'平面車位',price:50,owner:'林小姐',size:'車位寬度請先確認',available:true},
