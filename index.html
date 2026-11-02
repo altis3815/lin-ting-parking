@@ -279,27 +279,30 @@ async function residentLogout() {
   }
 }
 
+
 // 管理員：讀取住戶名單
 async function adminLoadResidents() {
   const status = document.getElementById('adminResidentStatus');
   const list = document.getElementById('adminResidentList');
 
-  if (!currentProfile || currentProfile.role !== 'admin' ||
-      !currentProfile.is_approved) {
-    status.textContent = '僅限已核准管理員使用。';
+  if (!currentProfile ||
+      currentProfile.role !== 'admin' ||
+      currentProfile.is_approved !== true) {
+    status.textContent = '僅限已核准管理員使用';
     return;
   }
 
   status.textContent = '正在讀取住戶資料...';
 
-  const { data, error } = await supabaseClient.rpc('admin_get_residents');
+  const { data, error } =
+    await supabaseClient.rpc('admin_get_residents');
 
   if (error) {
     status.textContent = '讀取失敗：' + error.message;
     return;
   }
 
-  list.innerHTML = '';
+  list.replaceChildren();
 
   data.forEach(user => {
     const item = document.createElement('div');
@@ -319,8 +322,20 @@ async function adminLoadResidents() {
     btn.textContent = user.is_approved ? '取消核准' : '核准住戶';
 
     btn.onclick = () =>
-      adminSetResidentApproval(user.user_id, !user.is_approved)
+      adminSetResidentApproval(
+        user.user_id,
+        !user.is_approved
+      );
 
+    item.append(name, unit, state, btn);
+    list.appendChild(item);
+  });
+
+  status.textContent = '住戶名單共 ' + data.length + ' 人';
+}
+
+
+// 管理員：讀取全社區車位
 async function adminLoadParkingSpaces() {
   const status = document.getElementById('adminSpaceStatus');
   const list = document.getElementById('adminSpaceList');
@@ -330,8 +345,6 @@ async function adminLoadParkingSpaces() {
     return;
   }
 
-  list.replaceChildren();
-
   if (!currentProfile ||
       currentProfile.role !== 'admin' ||
       currentProfile.is_approved !== true) {
@@ -340,12 +353,18 @@ async function adminLoadParkingSpaces() {
   }
 
   status.textContent = '正在讀取全社區車位...';
+  list.replaceChildren();
 
   try {
-const { data, error } =
-  await supabaseClient.rpc('admin_get_all_parking_spaces');
+    const { data, error } =
+      await supabaseClient.rpc('admin_get_all_parking_spaces');
 
-    if (data.length === 0) {
+    if (error) {
+      status.textContent = '讀取失敗：' + error.message;
+      return;
+    }
+
+    if (!data || data.length === 0) {
       status.textContent = '目前沒有車位資料';
       return;
     }
@@ -367,7 +386,8 @@ const { data, error } =
         '／' + (space.owner_unit || '未提供');
 
       const state = document.createElement('p');
-      state.textContent = space.is_active ? '開放中' : '已暫停';
+      state.textContent =
+        space.is_active ? '開放中' : '已暫停';
 
       card.append(title, location, owner, state);
       list.appendChild(card);
@@ -380,6 +400,7 @@ const { data, error } =
     status.textContent = '系統錯誤：' + err.message;
   }
 }
+
 
 
 // 管理員：核准或取消核准
