@@ -335,6 +335,62 @@ async function adminLoadResidents() {
 }
 
 
+
+// 管理員：讀取住戶名單
+async function adminLoadResidents() {
+  const status = document.getElementById('adminResidentStatus');
+  const list = document.getElementById('adminResidentList');
+
+  if (!currentProfile ||
+      currentProfile.role !== 'admin' ||
+      currentProfile.is_approved !== true) {
+    status.textContent = '僅限已核准管理員使用';
+    return;
+  }
+
+  status.textContent = '正在讀取住戶資料...';
+
+  const { data, error } =
+    await supabaseClient.rpc('admin_get_residents');
+
+  if (error) {
+    status.textContent = '讀取失敗：' + error.message;
+    return;
+  }
+
+  list.replaceChildren();
+
+  data.forEach(user => {
+    const item = document.createElement('div');
+    item.className = 'card';
+
+    const name = document.createElement('b');
+    name.textContent = user.display_name || '未填姓名';
+
+    const unit = document.createElement('p');
+    unit.textContent = user.unit_no || '未填戶別';
+
+    const state = document.createElement('p');
+    state.textContent = user.is_approved ? '已核准' : '待核准';
+
+    const btn = document.createElement('button');
+    btn.className = user.is_approved ? 'secondary' : 'primary';
+    btn.textContent = user.is_approved ? '取消核准' : '核准住戶';
+
+    btn.onclick = () =>
+      adminSetResidentApproval(
+        user.user_id,
+        !user.is_approved
+      );
+
+    item.append(name, unit, state, btn);
+    list.appendChild(item);
+  });
+
+  status.textContent = '住戶名單共 ' + data.length + ' 人';
+}
+
+
 // 管理員：讀取全社區車位
 async function adminLoadParkingSpaces() {
   const status = document.getElementById('adminSpaceStatus');
@@ -400,8 +456,6 @@ async function adminLoadParkingSpaces() {
     status.textContent = '系統錯誤：' + err.message;
   }
 }
-
-
 
 // 管理員：核准或取消核准
 async function adminSetResidentApproval(userId, approved) {
