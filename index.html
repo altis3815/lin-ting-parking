@@ -57,7 +57,14 @@ input,select,textarea{width:100%;border:1px solid #d8e0e9;border-radius:11px;pad
 <section class="page" id="adminPage">
  <div class="section-head"><h3>管理員專區</h3><span class="sub">社區管理總覽</span></div>
  <div class="stats"><div class="stat"><strong>128</strong><span>住戶帳號</span></div><div class="stat"><strong>36</strong><span>登錄車位</span></div><div class="stat"><strong id="adminPending">2</strong><span>待審申請</span></div></div>
- <div class="admin-menu"><button onclick="showToast('住戶管理示範：正式版可搜尋、驗證、停用住戶。')">👥 住戶管理<br><small>驗證與帳號狀態</small></button><button onclick="showToast('車位管理示範：正式版可停用違規或已失效車位。')">🅿️ 全部車位<br><small>刊登與停用管理</small></button><button onclick="go('requestsPage')">📋 申請管理<br><small>查看借用申請</small></button><button onclick="showToast('操作紀錄示範：正式版記錄操作者、時間、異動內容與原因。')">🧾 操作紀錄<br><small>稽核與追蹤</small></button></div>
+ <div class="card">
+  <h3>住戶審核管理</h3>
+  <p id="adminResidentStatus">請載入住戶名單</p>
+  <button class="primary" onclick="adminLoadResidents()">
+    載入住戶名單
+  </button>
+  <div id="adminResidentList"></div>
+ </div><div class="admin-menu"><button onclick="showToast('住戶管理示範：正式版可搜尋、驗證、停用住戶。')">👥 住戶管理<br><small>驗證與帳號狀態</small></button><button onclick="showToast('車位管理示範：正式版可停用違規或已失效車位。')">🅿️ 全部車位<br><small>刊登與停用管理</small></button><button onclick="go('requestsPage')">📋 申請管理<br><small>查看借用申請</small></button><button onclick="showToast('操作紀錄示範：正式版記錄操作者、時間、異動內容與原因。')">🧾 操作紀錄<br><small>稽核與追蹤</small></button></div>
  <div class="divider"></div><h3 style="font-size:15px">近期申請概況</h3><div id="adminRequests"></div>
 </section>
 <section class="page" id="noticesPage"><div class="section-head"><h3>通知中心</h3><button class="ghost small-btn" onclick="showToast('已將示範通知標記為已讀')">全部已讀</button></div><div class="card">🔔 <b>借用申請已送出</b><p class="sub">A-123 車位・等待提供者審核</p></div><div class="card">🟢 <b>共享車位刊登提醒</b><p class="sub">請確認您設定的可借時段正確。</p></div></section>
@@ -258,6 +265,81 @@ async function residentLogout() {
     currentUser = null;
     currentProfile = null;
   }
+}
+
+// 管理員：讀取住戶名單
+async function adminLoadResidents() {
+  const status = document.getElementById('adminResidentStatus');
+  const list = document.getElementById('adminResidentList');
+
+  if (!currentProfile || currentProfile.role !== 'admin' ||
+      !currentProfile.is_approved) {
+    status.textContent = '僅限已核准管理員使用。';
+    return;
+  }
+
+  status.textContent = '正在讀取住戶資料...';
+
+  const { data, error } = await supabaseClient.rpc('admin_get_residents');
+
+  if (error) {
+    status.textContent = '讀取失敗：' + error.message;
+    return;
+  }
+
+  list.innerHTML = '';
+
+  data.forEach(user => {
+    const item = document.createElement('div');
+    item.className = 'card';
+
+    const name = document.createElement('b');
+    name.textContent = user.display_name || '未填姓名';
+
+    const unit = document.createElement('p');
+    unit.textContent = user.unit_no || '未填戶別';
+
+    const state = document.createElement('p');
+    state.textContent = user.is_approved ? '已核准' : '待核准';
+
+    const btn = document.createElement('button');
+    btn.className = user.is_approved ? 'secondary' : 'primary';
+    btn.textContent = user.is_approved ? '取消核准' : '核准住戶';
+
+    btn.onclick = () =>
+      adminSetResidentApproval(user.user_id, !user.is_approved);
+
+    item.append(name, unit, state, btn);
+    list.appendChild(item);
+  });
+
+  status.textContent = '住戶名單共 ' + data.length + ' 人';
+}
+
+// 管理員：核准或取消核准
+async function adminSetResidentApproval(userId, approved) {
+  if (!currentProfile || currentProfile.role !== 'admin' ||
+      !currentProfile.is_approved) {
+    alert('沒有管理員權限');
+    return;
+  }
+
+  const { error } = await supabaseClient.rpc(
+    'admin_set_resident_approval',
+    {
+      p_user_id: userId,
+      p_approved: approved
+    }
+  );
+
+  if (error) {
+    alert('操作失敗：' + error.message);
+    return;
+  }
+
+  alert(approved ? '住戶核准成功' : '已取消住戶核准');
+
+  adminLoadResidents();
 }
 
 
